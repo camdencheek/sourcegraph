@@ -33,7 +33,6 @@ import { ExternalChangesetInfoCell } from './ExternalChangesetInfoCell'
 export interface ExternalChangesetNodeProps extends ThemeProps {
     node: ExternalChangesetFields
     viewerCanAdminister: boolean
-    enableSelect?: boolean
     onSelect?: (id: string, selected: boolean) => void
     isSelected?: (id: string) => boolean
     history: H.History
@@ -50,7 +49,6 @@ export interface ExternalChangesetNodeProps extends ThemeProps {
 export const ExternalChangesetNode: React.FunctionComponent<ExternalChangesetNodeProps> = ({
     node: initialNode,
     viewerCanAdminister,
-    enableSelect,
     onSelect,
     isSelected,
     isLightTheme,
@@ -94,19 +92,17 @@ export const ExternalChangesetNode: React.FunctionComponent<ExternalChangesetNod
                     <ChevronRightIcon className="icon-inline" aria-label="Expand section" />
                 )}
             </button>
-            {enableSelect && (
-                <div className="p-2">
-                    <input
-                        id={`select-changeset-${node.id}`}
-                        type="checkbox"
-                        className="btn"
-                        checked={selected}
-                        onChange={toggleSelected}
-                        disabled={!viewerCanAdminister}
-                        data-tooltip="Click to select changeset for detaching from batch change"
-                    />
-                </div>
-            )}
+            <div className="p-2">
+                <input
+                    id={`select-changeset-${node.id}`}
+                    type="checkbox"
+                    className="btn"
+                    checked={selected}
+                    onChange={toggleSelected}
+                    disabled={!viewerCanAdminister}
+                    data-tooltip="Click to select changeset for detaching from batch change"
+                />
+            </div>
             <ChangesetStatusCell
                 id={node.id}
                 state={node.state}
