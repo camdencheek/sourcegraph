@@ -2,6 +2,7 @@ import { BehaviorSubject } from 'rxjs'
 import { map } from 'rxjs/operators'
 import sourcegraph from 'sourcegraph'
 
+import { Settings } from '../../../settings/settings'
 import { ExtensionHostState } from '../extensionHostState'
 import { addWithRollback } from '../util'
 
@@ -64,21 +65,21 @@ export function createLogger(state: ExtensionHostState, name: string, log = cons
  * @param state Extension host state
  */
 export function setActiveLoggers(state: ExtensionHostState): sourcegraph.Unsubscribable {
-    const activeLoggers = state.settings.pipe(
-        map(settings => {
-            if (!settings.final || !settings.final['extensions.activeLoggers']) {
-                return new Set<string>()
-            }
-
-            const activeLoggers = settings.final['extensions.activeLoggers']
-
-            if (!Array.isArray(activeLoggers)) {
-                return new Set<string>()
-            }
-
-            return new Set<string>([...activeLoggers])
-        })
-    )
+    const activeLoggers = state.settings.pipe(map(settings => getActiveLoggersFromSettings(settings.final)))
 
     return activeLoggers.subscribe(activeLoggers => (state.activeLoggers = activeLoggers))
+}
+
+export function getActiveLoggersFromSettings(settings: Settings): Set<string> {
+    if (!settings || !settings['extensions.activeLoggers']) {
+        return new Set<string>()
+    }
+
+    const activeLoggers = settings['extensions.activeLoggers']
+
+    if (!Array.isArray(activeLoggers)) {
+        return new Set<string>()
+    }
+
+    return new Set<string>([...activeLoggers])
 }
