@@ -1094,6 +1094,23 @@ declare module 'sourcegraph' {
         provideFileDecorations: (fileDecorationContext: FileDecorationContext) => ProviderResult<FileDecoration[]>
     }
 
+    export interface Logger extends Unsubscribable {
+        /**
+         * Log a message to the console.
+         */
+        log(message?: any, ...optionalParams: any[]): void
+
+        /**
+         * Hide logs for the session if set as visible by the user.
+         */
+        hideLogs(): void
+
+        /**
+         * Show logs if previously hidden through `Logger#hideLogs` and set as visible by the user.
+         */
+        showLogs(): void
+    }
+
     /**
      * The client application that is running the extension.
      */
@@ -1160,6 +1177,16 @@ declare module 'sourcegraph' {
          * Register a file decoration provider
          */
         export function registerFileDecorationProvider(provider: FileDecorationProvider): Unsubscribable
+
+        /**
+         * Create a Logger instance to print messages to the console that users can
+         * show or hide.
+         *
+         * @param name The identifier that the Logger's messages will be prefixed with.
+         * `name` is also used by users to show messages, so ensure that it is unique
+         * by including the extension id, e.g "my-extension-id" or "my-extension-id:errors"
+         */
+        export function createLogger(name: string): Logger
     }
 
     /**
