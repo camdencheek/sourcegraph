@@ -15,6 +15,7 @@ import { HoverMerged } from './client/types/hover'
 import { ExecutableExtension } from './extension/activation'
 import { StatusBarItemWithKey } from './extension/api/codeEditor'
 import { ProxySubscribable } from './extension/api/common'
+import { LoggerData } from './extension/api/loggers'
 import {
     FileDecorationsByPath,
     LinkPreviewMerged,
@@ -168,6 +169,8 @@ export interface FlatExtensionHostAPI {
     haveInitialExtensionsLoaded: () => ProxySubscribable<boolean>
 
     getActiveExtensions: () => ProxySubscribable<ConfiguredExtension[]>
+
+    getRegisteredLoggers: () => ProxySubscribable<LoggerData[]>
 }
 
 /**

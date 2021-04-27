@@ -467,6 +467,9 @@ export function createExtensionHostAPI(state: ExtensionHostState): FlatExtension
             ),
 
         getActiveExtensions: () => proxySubscribable(state.activeExtensions),
+
+        getRegisteredLoggers: () =>
+            proxySubscribable(state.registeredLoggers.pipe(switchMap(loggers => combineLatest([...loggers])))),
     }
 
     return exposedToMain

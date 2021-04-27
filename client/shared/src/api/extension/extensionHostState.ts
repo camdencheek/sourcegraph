@@ -12,6 +12,7 @@ import { ExtensionViewer, ViewerUpdate } from '../viewerTypes'
 import { ExecutableExtension, observeActiveExtensions } from './activation'
 import { ExtensionCodeEditor } from './api/codeEditor'
 import { Context } from './api/context/context'
+import { LoggerData } from './api/loggers'
 import { ExtensionDocument } from './api/textDocument'
 import { ExtensionWorkspaceRoot } from './api/workspaceRoot'
 import { InitData } from './extensionHost'
@@ -42,7 +43,7 @@ export function createExtensionHostState(
         // Most extensions never call `configuration.get()` synchronously in `activate()` to get
         // the initial settings data, and instead only subscribe to configuration changes.
         // In order for these extensions to be able to access settings, make sure `configuration` emits on subscription.
-        settings: new BehaviorSubject<Readonly<SettingsCascade<object>>>(initData.initialSettings),
+        settings: new BehaviorSubject<Readonly<SettingsCascade>>(initData.initialSettings),
 
         queryTransformers: new BehaviorSubject<readonly sourcegraph.QueryTransformer[]>([]),
 
@@ -100,6 +101,9 @@ export function createExtensionHostState(
         >([]),
 
         activeExtensions,
+
+        registeredLoggers: new BehaviorSubject<readonly Observable<LoggerData>[]>([]),
+        activeLoggers: new Set<string>(),
     }
 }
 
@@ -166,4 +170,9 @@ export interface ExtensionHostState {
 
     // Extensions
     activeExtensions: Observable<(ConfiguredExtension | ExecutableExtension)[]>
+
+    // Loggers
+    registeredLoggers: BehaviorSubject<readonly Observable<LoggerData>[]>
+    /** Set of names of active loggers determined by user settings */
+    activeLoggers: Set<string>
 }

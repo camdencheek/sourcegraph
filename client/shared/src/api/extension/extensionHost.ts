@@ -13,6 +13,7 @@ import { registerComlinkTransferHandlers } from '../util'
 import { activateExtensions } from './activation'
 import { ExtensionHostAPI, ExtensionHostAPIFactory } from './api/api'
 import { DocumentHighlightKind } from './api/documentHighlights'
+import { setActiveLoggers } from './api/loggers'
 import { createExtensionAPI } from './extensionApi'
 import { createExtensionHostAPI, NotificationType } from './extensionHostApi'
 import { createExtensionHostState, ExtensionHostState } from './extensionHostState'
@@ -139,8 +140,11 @@ function createExtensionAndExtensionHostAPIs(
         extensionHostState,
         proxy
     )
+
     // Activate extensions
     subscription.add(activateExtensions(extensionHostState, proxy))
+    // Observe settings and update active loggers state
+    subscription.add(setActiveLoggers(extensionHostState))
 
     // Expose the extension host API to the client (main thread)
     const extensionHostAPI: ExtensionHostAPI = {

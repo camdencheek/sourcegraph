@@ -11,6 +11,7 @@ import { syncRemoteSubscription } from '../util'
 import { createStatusBarItemType } from './api/codeEditor'
 import { proxySubscribable } from './api/common'
 import { createDecorationType } from './api/decorations'
+import { createLogger } from './api/loggers'
 import { NotificationType, PanelViewData } from './extensionHostApi'
 import { ExtensionHostState } from './extensionHostState'
 import { addWithRollback } from './util'
@@ -209,6 +210,7 @@ export function createExtensionAPI(state: ExtensionHostState, mainAPI: Remote<Ma
         },
         createDecorationType,
         createStatusBarItemType,
+        createLogger: name => createLogger(state, name),
     }
 
     // Commands
