@@ -231,10 +231,7 @@ async function fetcher(graphQLParameters: _graphiqlModule.GraphQLParams): Promis
         method: 'POST',
         body: JSON.stringify(graphQLParameters),
         credentials: 'include',
-        headers: new Headers({
-            'x-requested-with': 'Sourcegraph GraphQL Explorer',
-            'X-Sourcegraph-Should-Trace': 'true',
-        }),
+        headers: new Headers({ 'x-requested-with': 'Sourcegraph GraphQL Explorer' }),
     })
     const responseBody = await response.text()
     try {
