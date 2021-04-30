@@ -683,6 +683,51 @@ func ConcatRevFilters(b Basic) Basic {
 	return Basic{Parameters: toParameters(modified), Pattern: b.Pattern}
 }
 
+func remove(s []Parameter, i int) []Parameter {
+	s[i] = s[len(s)-1]
+	// We do not need to put s[i] at the end, as it will be discarded anyway
+	return s[:len(s)-1]
+}
+
+// typeRepoToFilter rewrites queries of the form:
+//
+//   type:repo a pattern to match repos
+//
+//   to
+//
+//   repo:"a pattern to match repos".
+//
+// This because `type:repo` triggers some backend logic that does not perform a
+// repo search in an equivalent way, for rather nebulous reasons:
+// https://github.com/sourcegraph/sourcegraph/issues/19239.
+func typeRepoToFilter(b Basic) Basic {
+	found := false
+	for i, p := range b.Parameters {
+		if p.Field == FieldType && p.Value == "repo" {
+			found = true
+			b.Parameters = remove(b.Parameters, i)
+		}
+	}
+	if !found {
+		return b
+	}
+
+	if b.Pattern != nil {
+		if p, ok := b.Pattern.(Pattern); ok && !p.Negated {
+			// Can't help you if it's not an atomic value sorry.
+			repoParameter := Parameter{
+				Field:   FieldRepo,
+				Value:   p.Value,
+				Negated: false,
+			}
+			b.Parameters = append(b.Parameters, repoParameter)
+			b.Pattern = Pattern{}
+			return b
+		}
+	}
+	return b
+}
+
 // labelStructural converts Literal labels to Structural labels. Structural
 // queries are parsed the same as literal queries, we just convert the labels as
 // a postprocessing step to keep the parser lean.
